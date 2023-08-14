@@ -69,6 +69,14 @@ export class MentionSuggest extends EditorSuggest<WPUser> {
 	}
 
 	selectSuggestion(value: WPUser, evt: MouseEvent | KeyboardEvent): void {
+		if (this.context) {
+			(this.context.editor as Editor)
+				.replaceRange(
+					`@${value.userLogin} `,
+					this.context.start,
+					this.context.end
+				);
+		}
 	}
 
 }
