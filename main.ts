@@ -1,11 +1,8 @@
-import {
-	App, Editor,
-	Plugin,
-	PluginSettingTab,
-	requestUrl,
-	Setting
-} from 'obsidian';
+import {App, Plugin, PluginSettingTab, requestUrl, Setting} from 'obsidian';
 import {MentionSuggest} from "./MentionSuggest";
+import {EditorView, WidgetType} from "@codemirror/view";
+import {mentionsViewPlugin} from "./MentionsPlugin";
+import {MentionPostProcessor} from "./MentionPostProcessor";
 
 // Remember to rename these classes and interfaces!
 
@@ -60,6 +57,8 @@ export default class ObsidianPress extends Plugin {
 
 		this.registerEditorSuggest(new MentionSuggest(this.app, this));
 
+		this.registerMarkdownPostProcessor(MentionPostProcessor.mentionsProcessor)
+		this.registerEditorExtension(mentionsViewPlugin)
 	}
 
 	onunload() {
@@ -105,3 +104,16 @@ class SettingsTab extends PluginSettingTab {
 			)
 	}
 }
+
+
+export class EmojiWidget extends WidgetType {
+	toDOM(view: EditorView): HTMLElement {
+		const div = document.createElement("span");
+
+		div.innerText = "👉";
+
+		return div;
+	}
+}
+
+
