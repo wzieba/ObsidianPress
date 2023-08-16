@@ -1,10 +1,7 @@
 import {App, Plugin, PluginSettingTab, requestUrl, Setting} from 'obsidian';
 import {MentionSuggest} from "./MentionSuggest";
-import {EditorView, WidgetType} from "@codemirror/view";
 import {mentionsViewPlugin} from "./MentionsPlugin";
 import {MentionPostProcessor} from "./MentionPostProcessor";
-
-// Remember to rename these classes and interfaces!
 
 interface PluginSettings {
 	accessToken: string;
@@ -104,16 +101,3 @@ class SettingsTab extends PluginSettingTab {
 			)
 	}
 }
-
-
-export class EmojiWidget extends WidgetType {
-	toDOM(view: EditorView): HTMLElement {
-		const div = document.createElement("span");
-
-		div.innerText = "👉";
-
-		return div;
-	}
-}
-
-
