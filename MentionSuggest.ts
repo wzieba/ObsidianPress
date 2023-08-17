@@ -22,6 +22,8 @@ export class WPUser {
 	}
 }
 
+const emptyImage = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
+
 export class MentionSuggest extends EditorSuggest<WPUser> {
 
 	users: WPUser[] = [];
@@ -82,16 +84,18 @@ export class MentionSuggest extends EditorSuggest<WPUser> {
 				'User-Agent': 'obsidian.md'
 			}
 		}).then(response => {
-
 			const arrayBuffer = response.arrayBuffer;
 			const bytes = new Uint8Array(arrayBuffer);
 			const blob = new Blob([bytes.buffer]);
 
 			const reader = new FileReader();
-			reader.onload = function (e) {
-				avatar.src = e.target.result;
+			reader.onload = function (event) {
+				avatar.src = event.target.result;
 			};
 			reader.readAsDataURL(blob);
+		}).catch((error) => {
+			console.log(error)
+			avatar.src = emptyImage
 		})
 
 		const nameSpan = el.doc.createElement("span");
