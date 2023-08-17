@@ -5,10 +5,10 @@ import {
 	EditorSuggest,
 	EditorSuggestContext,
 	EditorSuggestTriggerInfo,
-	requestUrl,
 	TFile
 } from "obsidian";
 import ObsidianPress from "./main";
+import {WpcomApi} from "./WpcomApi";
 
 export class WPUser {
 	userLogin: string;
@@ -28,19 +28,16 @@ export class MentionSuggest extends EditorSuggest<WPUser> {
 
 	users: WPUser[] = [];
 	plugin: ObsidianPress;
+	wpcomApi: WpcomApi
 
-	constructor(app: App, plugin: ObsidianPress) {
+	constructor(app: App, plugin: ObsidianPress, wpComApi: WpcomApi) {
 		super(app);
 		this.plugin = plugin
+		this.wpcomApi = wpComApi
 
-		requestUrl({
-			url: "https://public-api.wordpress.com/rest/v1.1/users/suggest?site_id=208157483",
-			method: 'GET',
-			headers: {
-				'User-Agent': 'obsidian.md',
-				'authorization': `Bearer ${plugin.settings.accessToken}`
-			}
-		}).then(response => {
+		wpComApi.authenticatedRequest(
+			"https://public-api.wordpress.com/rest/v1.1/users/suggest?site_id=208157483",
+		).then(response => {
 			this.users = response.json.suggestions.map((jsonUser) => new WPUser(
 				jsonUser.user_login,
 				jsonUser.display_name,
@@ -54,7 +51,6 @@ export class MentionSuggest extends EditorSuggest<WPUser> {
 	}
 
 	onTrigger(cursor: EditorPosition, editor: Editor, file: TFile | null): EditorSuggestTriggerInfo | null {
-		//TODO
 		const line = editor.getLine(cursor.line).substring(0, cursor.ch);
 
 		if (!line.contains('@')) return null;
@@ -76,14 +72,7 @@ export class MentionSuggest extends EditorSuggest<WPUser> {
 		const avatar = el.doc.createElement("img")
 		avatar.addClass("obsidianpress-suggestion-avatar")
 
-		requestUrl({
-			url: value.avatar + "&w=32",
-			method: 'GET',
-			headers: {
-				'authorization': `Bearer ${this.plugin.settings.accessToken}`,
-				'User-Agent': 'obsidian.md'
-			}
-		}).then(response => {
+		this.wpcomApi.authenticatedRequest(value.avatar + "&w=32").then(response => {
 			const arrayBuffer = response.arrayBuffer;
 			const bytes = new Uint8Array(arrayBuffer);
 			const blob = new Blob([bytes.buffer]);

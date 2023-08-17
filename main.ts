@@ -2,6 +2,7 @@ import {App, Plugin, PluginSettingTab, requestUrl, Setting} from 'obsidian';
 import {MentionSuggest} from "./MentionSuggest";
 import {mentionsViewPlugin} from "./MentionsPlugin";
 import {MentionPostProcessor} from "./MentionPostProcessor";
+import {WpcomApi} from "./WpcomApi";
 
 interface PluginSettings {
 	accessToken: string;
@@ -52,7 +53,7 @@ export default class ObsidianPress extends Plugin {
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new SettingsTab(this.app, this));
 
-		this.registerEditorSuggest(new MentionSuggest(this.app, this));
+		this.registerEditorSuggest(new MentionSuggest(this.app, this, new WpcomApi(this)));
 
 		this.registerMarkdownPostProcessor(MentionPostProcessor.mentionsProcessor)
 		this.registerEditorExtension(mentionsViewPlugin)
