@@ -1,5 +1,5 @@
 import {App, Plugin, PluginSettingTab, Setting} from 'obsidian';
-import {MentionSuggest} from "./MentionSuggest";
+import {MentionSuggest, WPUser} from "./MentionSuggest";
 import {mentionsViewPlugin} from "./MentionsPlugin";
 import {MentionPostProcessor} from "./MentionPostProcessor";
 import {WpcomApi} from "./WpcomApi";
@@ -7,10 +7,12 @@ import {AuthenticationRepository} from "./AuthenticationRepository";
 
 export interface PluginSettings {
 	accessToken: string;
+	cachedUsers: WPUser[]
 }
 
 const DEFAULT_SETTINGS: PluginSettings = {
-	accessToken: ''
+	accessToken: '',
+	cachedUsers: []
 }
 
 export function generateQueryString(params: Record<string, undefined | number | string>): string {
@@ -27,7 +29,8 @@ export default class ObsidianPress extends Plugin {
 
 	async onload() {
 		await this.loadSettings();
-		this.authenticationRepository = new AuthenticationRepository(this.settings, this.saveData)
+		this.authenticationRepository = new AuthenticationRepository(this.settings)
+		const wpcomApi = new WpcomApi(this);
 
 		this.registerObsidianProtocolHandler("obsidianpress-plugin-oauth", async (data) => {
 			await this.authenticationRepository.requestAuthTokenUpdate(data.code).then((token) => {
@@ -35,11 +38,26 @@ export default class ObsidianPress extends Plugin {
 				this.saveSettings()
 			})
 		})
+		this.fetchUsers(wpcomApi);
 
 		this.addSettingTab(new SettingsTab(this.app, this));
-		this.registerEditorSuggest(new MentionSuggest(this.app, this, new WpcomApi(this)));
+		this.registerEditorSuggest(new MentionSuggest(this.app, this.settings, wpcomApi));
 		this.registerMarkdownPostProcessor(MentionPostProcessor.mentionsProcessor)
 		this.registerEditorExtension(mentionsViewPlugin)
+	}
+
+	private fetchUsers(wpcomApi: WpcomApi) {
+		wpcomApi.authenticatedRequest(
+			"https://public-api.wordpress.com/rest/v1.1/users/suggest?site_id=208157483",
+		).then(response => {
+			const users = response.json.suggestions.map((jsonUser) => new WPUser(
+				jsonUser.user_login,
+				jsonUser.display_name,
+				jsonUser.image_URL,
+			))
+			this.settings.cachedUsers = users
+			this.saveSettings()
+		});
 	}
 
 	onunload() {

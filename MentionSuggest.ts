@@ -7,7 +7,7 @@ import {
 	EditorSuggestTriggerInfo,
 	TFile
 } from "obsidian";
-import ObsidianPress from "./main";
+import {PluginSettings} from "./main";
 import {WpcomApi} from "./WpcomApi";
 
 export class WPUser {
@@ -26,28 +26,17 @@ const emptyImage = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
 
 export class MentionSuggest extends EditorSuggest<WPUser> {
 
-	users: WPUser[] = [];
-	plugin: ObsidianPress;
-	wpcomApi: WpcomApi
+	settings: PluginSettings;
+	wpcomApi: WpcomApi;
 
-	constructor(app: App, plugin: ObsidianPress, wpComApi: WpcomApi) {
+	constructor(app: App, settings: PluginSettings, wpcomApi: WpcomApi) {
 		super(app);
-		this.plugin = plugin
-		this.wpcomApi = wpComApi
-
-		wpComApi.authenticatedRequest(
-			"https://public-api.wordpress.com/rest/v1.1/users/suggest?site_id=208157483",
-		).then(response => {
-			this.users = response.json.suggestions.map((jsonUser) => new WPUser(
-				jsonUser.user_login,
-				jsonUser.display_name,
-				jsonUser.image_URL,
-			))
-		});
+		this.settings = settings
+		this.wpcomApi = wpcomApi
 	}
 
 	getSuggestions(context: EditorSuggestContext): WPUser[] | Promise<WPUser[]> {
-		return this.users.filter((user) => user.userLogin.includes(context.query) || user.name.includes(context.query))
+		return this.settings.cachedUsers.filter((user) => user.userLogin.includes(context.query) || user.name.includes(context.query))
 	}
 
 	onTrigger(cursor: EditorPosition, editor: Editor, file: TFile | null): EditorSuggestTriggerInfo | null {
