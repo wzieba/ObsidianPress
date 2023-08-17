@@ -1,10 +1,11 @@
-import {App, Plugin, PluginSettingTab, requestUrl, Setting} from 'obsidian';
+import {App, Plugin, PluginSettingTab, Setting} from 'obsidian';
 import {MentionSuggest} from "./MentionSuggest";
 import {mentionsViewPlugin} from "./MentionsPlugin";
 import {MentionPostProcessor} from "./MentionPostProcessor";
 import {WpcomApi} from "./WpcomApi";
+import {AuthenticationRepository} from "./AuthenticationRepository";
 
-interface PluginSettings {
+export interface PluginSettings {
 	accessToken: string;
 }
 
@@ -22,45 +23,26 @@ export function generateQueryString(params: Record<string, undefined | number | 
 
 export default class ObsidianPress extends Plugin {
 	settings: PluginSettings;
+	authenticationRepository: AuthenticationRepository;
 
 	async onload() {
 		await this.loadSettings();
+		this.authenticationRepository = new AuthenticationRepository(this.settings, this.saveData)
 
 		this.registerObsidianProtocolHandler("obsidianpress-plugin-oauth", async (data) => {
-			requestUrl({
-				url: "https://public-api.wordpress.com/oauth2/token",
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/x-www-form-urlencoded',
-					'User-Agent': 'obsidian.md'
-				},
-				body: generateQueryString({
-					grant_type: 'authorization_code',
-					client_id: "89477",
-					code: data.code,
-					redirect_uri: "obsidian://obsidianpress-plugin-oauth",
-				})
-			}).then(response => {
-				console.log('getToken response', response);
-
-				this.settings.accessToken = response.json.access_token
+			await this.authenticationRepository.requestAuthTokenUpdate(data.code).then((token) => {
+				this.settings.accessToken = token
 				this.saveSettings()
-			}).catch(function (error) {
-				console.log(error.message);
-			});
+			})
 		})
 
-		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new SettingsTab(this.app, this));
-
 		this.registerEditorSuggest(new MentionSuggest(this.app, this, new WpcomApi(this)));
-
 		this.registerMarkdownPostProcessor(MentionPostProcessor.mentionsProcessor)
 		this.registerEditorExtension(mentionsViewPlugin)
 	}
 
 	onunload() {
-
 	}
 
 	async loadSettings() {
@@ -82,22 +64,14 @@ class SettingsTab extends PluginSettingTab {
 
 	display(): void {
 		const {containerEl} = this;
-
 		containerEl.empty();
-
-		const authUrl = new URL("https://public-api.wordpress.com/oauth2/authorize")
-		authUrl.searchParams.append("client_id", "89477")
-		authUrl.searchParams.append("redirect_uri", "obsidian://obsidianpress-plugin-oauth")
-		authUrl.searchParams.append("response_type", "code")
-		authUrl.searchParams.append("blog", "wooengage.wordpress.com")
-		authUrl.searchParams.append("scope", "users")
 
 		new Setting(containerEl)
 			.setName('Authorize')
 			.addButton(button => button
 				.setButtonText("Authorize with WPCOM")
 				.onClick(() => {
-					window.open(authUrl.href);
+					window.open(AuthenticationRepository.getAuthorizeServerUrlParams());
 				})
 			)
 	}
