@@ -16,7 +16,7 @@ The aim of ObsidianPress is to offer features that make it easy to connect notes
 ### Mentions
 This feature lets you mention WPCOM users in your notes.
 
-https://github.com/wzieba/ObsidianPress/assets/5845095/7c19b407-73c0-41e5-839e-2ce14e92e491
+https://github.com/wzieba/ObsidianPress/assets/5845095/7ab7e0fc-eaf5-4e8b-acaf-e0a286af7332
 
 ### (Planned) Fetch P2 post
 Details about this feature are coming soon.
