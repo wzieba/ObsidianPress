@@ -8,6 +8,8 @@ If your plugin does not need CSS, delete this file.
 */
 
 .obsidianpress-suggestion-container {
+	display: flex;
+	align-items: center;
 }
 
 .obsidianpress-suggestion-avatar {
