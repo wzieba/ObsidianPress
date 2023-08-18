@@ -9,6 +9,7 @@ import {
 } from "obsidian";
 import {PluginSettings} from "./main";
 import {WpcomApi} from "./WpcomApi";
+import * as fuzzysort from "fuzzysort";
 
 export class WPUser {
 	userLogin: string;
@@ -36,7 +37,10 @@ export class MentionSuggest extends EditorSuggest<WPUser> {
 	}
 
 	getSuggestions(context: EditorSuggestContext): WPUser[] | Promise<WPUser[]> {
-		return this.settings.cachedUsers.filter((user) => user.userLogin.includes(context.query) || user.name.includes(context.query))
+		return fuzzysort.go(context.query.replace(' ', ''), this.settings.cachedUsers, {
+			keys: ['userLogin', 'name'],
+			all: true
+		}).map((result) => result.obj)
 	}
 
 	onTrigger(cursor: EditorPosition, editor: Editor, file: TFile | null): EditorSuggestTriggerInfo | null {
@@ -45,6 +49,9 @@ export class MentionSuggest extends EditorSuggest<WPUser> {
 		if (!line.contains('@')) return null;
 
 		const currentPart = line.split('@').reverse()[0];
+
+		if (currentPart.includes(' ')) return null;
+
 		const currentStart: number = [...line.matchAll(new RegExp('@', 'g'))].reverse()[0].index;
 
 		return {
