@@ -1,31 +1,28 @@
 # ObsidianPress
 
-This is a plugin with set of features to help making notes relevant to content of WordPress.com blogs.
+ObsidianPress is an Obsidian plugin designed to help you connect your notes with the content of WordPress.com blogs.
 
-## Current state
-Early development/pre-alpha.
+## Development Phase
+Right now, ObsidianPress is in the early stages of development (pre-alpha).
 
-## Audience
-I write it with [Automatticians](https://automattic.com/about/) using it in mind, but it should be possible to use the plugin with every WordPress.com blog.
+## Intended Users
+While I'm building it with [Automatticians](https://automattic.com/about/) in mind, ObsidianPress should work well with any WordPress.com blog.
 
-## Purpose
-ObsidianPress will contain a set of feature that will allow for easier integration of notes written in Obsidian and
-blog posts on WordPress.com. Furthermore, I hope it could help to elevate quality of private notes by allowing users
-to link personal notes to blog posts or fragments of them.
+## Main Goal
+The aim of ObsidianPress is to offer features that make it easy to connect notes written in Obsidian with blog posts on WordPress.com. By doing this, I hope to improve the value of private notes by letting users link personal notes to blog posts or parts of them.
 
 ## Features
 
 ### Mentions
-User can mention WPCOM users in their notes.
+This feature lets you mention WPCOM users in your notes.
 
-<img src="static/mentions_demo.gif" width="600">
+https://github.com/wzieba/ObsidianPress/assets/5845095/7c19b407-73c0-41e5-839e-2ce14e92e491
 
-### Fetch P2 post
-TBD
+### (Planned) Fetch P2 post
+Details about this feature are coming soon.
 
-### Publish a draft
-TBD
+### (Planned) Publish a draft
+We'll provide details about this feature soon.
 
-## How to set up the plugin
-After installing the plugin go to Settings > ObsidianPress > Authorize with WPCOM. After a successful authorization, 
-the plugin is set up.
+## Plugin Setup
+After you've installed the plugin, go to Settings > ObsidianPress > Authorize with WPCOM. Once you've authorized successfully, the plugin should be ready to use.

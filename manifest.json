@@ -3,7 +3,7 @@
 	"name": "ObsidianPress",
 	"version": "0.0.1",
 	"minAppVersion": "0.15.0",
-	"description": "This plugin is set of helpers to improve working with WordPress.com blogs.",
+	"description": "Set of helpers for working with WordPress.com blogs in Obsidian.",
 	"author": "wzieba",
 	"authorUrl": "https://github.com/wzieba",
 	"isDesktopOnly": false
