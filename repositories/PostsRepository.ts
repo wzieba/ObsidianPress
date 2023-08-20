@@ -53,9 +53,12 @@ export class PostsRepository {
 	}
 
 	private mapHtmlToMarkdown(rawPost: RawPost): Post {
+
+		const tagsHeader = "---\ntags: P2\n---\n"
+
 		return new Post(
 			rawPost.title,
-			this.turndownService.turndown(rawPost.content)
+			tagsHeader + this.turndownService.turndown(rawPost.content)
 		)
 	}
 }
