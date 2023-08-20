@@ -2,8 +2,12 @@ import {App, Plugin, PluginSettingTab, Setting} from 'obsidian';
 import {MentionSuggest, WPUser} from "./MentionSuggest";
 import {mentionsViewPlugin} from "./MentionsPlugin";
 import {MentionPostProcessor} from "./MentionPostProcessor";
-import {WpcomApi} from "./WpcomApi";
-import {AuthenticationRepository} from "./AuthenticationRepository";
+import {WpcomApi} from "./networking/WpcomApi";
+import {AuthenticationRepository} from "./repositories/AuthenticationRepository";
+import {PostsRepository} from "./repositories/PostsRepository";
+import {FileSystemRepository} from "./repositories/FileSystemRepository";
+import {SavePost} from "./usecases/SavePost";
+import {FetchPostModal} from "./ui/FetchPostModal";
 
 export interface PluginSettings {
 	accessToken: string;
@@ -29,8 +33,10 @@ export default class ObsidianPress extends Plugin {
 
 	async onload() {
 		await this.loadSettings();
-		this.authenticationRepository = new AuthenticationRepository(this.settings)
 		const wpcomApi = new WpcomApi(this);
+		const postsRepository = new PostsRepository(wpcomApi)
+		const fileSystemRepository = new FileSystemRepository(this.app.vault)
+		const savePost = new SavePost(fileSystemRepository, postsRepository)
 
 		this.registerObsidianProtocolHandler("obsidianpress-plugin-oauth", async (data) => {
 			await this.authenticationRepository.requestAuthTokenUpdate(data.code).then((token) => {
@@ -44,6 +50,16 @@ export default class ObsidianPress extends Plugin {
 		this.registerEditorSuggest(new MentionSuggest(this.app, this.settings, wpcomApi));
 		this.registerMarkdownPostProcessor(MentionPostProcessor.mentionsProcessor)
 		this.registerEditorExtension(mentionsViewPlugin)
+
+		this.addCommand({
+			id: 'fetch-post',
+			name: 'Fetch and save WPCOM post',
+			callback: () => {
+				new FetchPostModal(this.app, (url)=>{
+					savePost.run(url)
+				}).open();
+			}
+		});
 	}
 
 	private fetchUsers(wpcomApi: WpcomApi) {
