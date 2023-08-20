@@ -13,6 +13,7 @@
 	"license": "MIT",
 	"devDependencies": {
 		"@types/node": "^16.11.6",
+		"@types/turndown": "^5.0.1",
 		"@typescript-eslint/eslint-plugin": "5.29.0",
 		"@typescript-eslint/parser": "5.29.0",
 		"builtin-modules": "3.3.0",
@@ -23,6 +24,8 @@
 	},
 	"dependencies": {
 		"@codemirror/language": "^6.8.0",
-		"fuzzysort": "^2.0.4"
+		"fuzzysort": "^2.0.4",
+		"turndown": "^7.1.2",
+		"turndown-plugin-gfm": "^1.0.2"
 	}
 }
