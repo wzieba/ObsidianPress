@@ -1,6 +1,6 @@
 import {requestUrl} from "obsidian";
-import {generateQueryString, PluginSettings} from "./main";
-import {CLIENT_ID, REDIRECT_URI} from "./AuthenticationConsts";
+import {generateQueryString, PluginSettings} from "../main";
+import {CLIENT_ID, REDIRECT_URI} from "../AuthenticationConsts";
 
 export class AuthenticationRepository {
 	settings: PluginSettings
@@ -37,8 +37,7 @@ export class AuthenticationRepository {
 		authUrl.searchParams.append("client_id", CLIENT_ID)
 		authUrl.searchParams.append("redirect_uri", REDIRECT_URI)
 		authUrl.searchParams.append("response_type", "code")
-		authUrl.searchParams.append("blog", "wooengage.wordpress.com")
-		authUrl.searchParams.append("scope", "users")
+		authUrl.searchParams.append("scope", "global")
 		return authUrl.href
 	}
 }
