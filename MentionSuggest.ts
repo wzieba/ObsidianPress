@@ -8,7 +8,7 @@ import {
 	TFile
 } from "obsidian";
 import {PluginSettings} from "./main";
-import {WpcomApi} from "./WpcomApi";
+import {WpcomApi} from "./networking/WpcomApi";
 import * as fuzzysort from "fuzzysort";
 
 export class WPUser {
@@ -68,7 +68,7 @@ export class MentionSuggest extends EditorSuggest<WPUser> {
 		const avatar = el.doc.createElement("img")
 		avatar.addClass("obsidianpress-suggestion-avatar")
 
-		this.wpcomApi.authenticatedRequest(value.avatar + "&w=32").then(response => {
+		this.wpcomApi.get(value.avatar + "&w=32").then(response => {
 			const arrayBuffer = response.arrayBuffer;
 			const bytes = new Uint8Array(arrayBuffer);
 			const blob = new Blob([bytes.buffer]);

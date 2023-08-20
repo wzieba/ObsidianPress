@@ -1,5 +1,5 @@
 import {requestUrl} from "obsidian";
-import ObsidianPress from "./main";
+import ObsidianPress from "../main";
 
 export class WpcomApi {
 	plugin: ObsidianPress
@@ -8,7 +8,7 @@ export class WpcomApi {
 		this.plugin = plugin;
 	}
 
-	authenticatedRequest(url: string) {
+	get(url: string) {
 		return requestUrl({
 			url: url,
 			method: 'GET',

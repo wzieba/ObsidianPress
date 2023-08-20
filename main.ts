@@ -47,7 +47,7 @@ export default class ObsidianPress extends Plugin {
 	}
 
 	private fetchUsers(wpcomApi: WpcomApi) {
-		wpcomApi.authenticatedRequest(
+		wpcomApi.get(
 			"https://public-api.wordpress.com/rest/v1.1/users/suggest?site_id=208157483",
 		).then(response => {
 			const users = response.json.suggestions.map((jsonUser) => new WPUser(
