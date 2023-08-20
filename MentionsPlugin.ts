@@ -35,7 +35,7 @@ class MentionsPlugin implements PluginValue {
 
 			mentions.forEach((m) => {
 				builder.add(
-					m.index,
+					from + m.index,
 					from + m.index + m[0].length,
 					Decoration.mark({
 						class: "cm-url",
