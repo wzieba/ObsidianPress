@@ -16,7 +16,6 @@ export class AuthorizedMediaPostProcessor {
 
 		nodes.forEach((child: ChildNode) => {
 
-			console.log(child.nodeName)
 			if (child.nodeName.toLowerCase() == 'img') {
 				const image = child as HTMLImageElement
 

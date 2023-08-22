@@ -15,12 +15,16 @@ export class FileSystemRepository {
 			await this.vault.createFolder("P2")
 		}
 
-		if (this.vault.getAbstractFileByPath(`P2/${post.title}.md`)) {
+		if (!this.vault.getAbstractFileByPath(`P2/${post.siteHost}`)) {
+			await this.vault.createFolder(`P2/${post.siteHost}`)
+		}
+
+		if (this.vault.getAbstractFileByPath(`P2/${post.siteHost}/${post.title}.md`)) {
 			return Promise.reject("The post already exists!")
 		}
 
 		await this.vault.create(
-			`P2/${post.title
+			`P2/${post.siteHost}/${post.title
 				.replace("\\", " ")
 				.replace("/", " ")
 				.replace(":", " ")

@@ -5,10 +5,12 @@ import {WpcomApi} from "../networking/WpcomApi";
 export class Post {
 	title: string
 	content: string
+	siteHost: string
 
-	constructor(title: string, content: string) {
+	constructor(title: string, content: string, siteHost: string) {
 		this.title = title;
 		this.content = content;
+		this.siteHost = siteHost;
 	}
 }
 
@@ -39,7 +41,7 @@ export class PostsRepository {
 		const blog = url.host
 		const slug = url.pathname.split('/').filter((segment) => segment).last()
 		const rawPost = await this.fetchPost(blog, slug)
-		return this.mapHtmlToMarkdown(rawPost)
+		return this.mapHtmlToMarkdown(rawPost, blog)
 	}
 
 	private async fetchPost(blog: string, slug: string): Promise<RawPost> {
@@ -52,13 +54,14 @@ export class PostsRepository {
 		}
 	}
 
-	private mapHtmlToMarkdown(rawPost: RawPost): Post {
+	private mapHtmlToMarkdown(rawPost: RawPost, blog: string): Post {
 
 		const tagsHeader = "---\ntags: P2\n---\n"
 
 		return new Post(
 			rawPost.title,
-			tagsHeader + this.turndownService.turndown(rawPost.content)
+			tagsHeader + this.turndownService.turndown(rawPost.content),
+			blog
 		)
 	}
 }
