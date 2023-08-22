@@ -8,6 +8,7 @@ import {PostsRepository} from "./repositories/PostsRepository";
 import {FileSystemRepository} from "./repositories/FileSystemRepository";
 import {SavePost} from "./usecases/SavePost";
 import {FetchPostModal} from "./ui/FetchPostModal";
+import {AuthorizedMediaPostProcessor} from "./AuthorizedMediaPostProcessor";
 
 export interface PluginSettings {
 	accessToken: string;
@@ -37,6 +38,7 @@ export default class ObsidianPress extends Plugin {
 		const postsRepository = new PostsRepository(wpcomApi)
 		const fileSystemRepository = new FileSystemRepository(this.app.vault)
 		const savePost = new SavePost(fileSystemRepository, postsRepository)
+		const authorizedMediaPostProcessor = new AuthorizedMediaPostProcessor(wpcomApi)
 
 		this.registerObsidianProtocolHandler("obsidianpress-plugin-oauth", async (data) => {
 			await this.authenticationRepository.requestAuthTokenUpdate(data.code).then((token) => {
@@ -49,6 +51,7 @@ export default class ObsidianPress extends Plugin {
 		this.addSettingTab(new SettingsTab(this.app, this));
 		this.registerEditorSuggest(new MentionSuggest(this.app, this.settings, wpcomApi));
 		this.registerMarkdownPostProcessor(MentionPostProcessor.mentionsProcessor)
+		this.registerMarkdownPostProcessor(authorizedMediaPostProcessor.processor)
 		this.registerEditorExtension(mentionsViewPlugin)
 
 		this.addCommand({
