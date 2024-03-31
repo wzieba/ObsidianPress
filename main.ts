@@ -34,6 +34,7 @@ export default class ObsidianPress extends Plugin {
 
 	async onload() {
 		await this.loadSettings();
+		this.authenticationRepository = new AuthenticationRepository(this.settings)
 		const wpcomApi = new WpcomApi(this);
 		const postsRepository = new PostsRepository(wpcomApi)
 		const fileSystemRepository = new FileSystemRepository(this.app.vault)
